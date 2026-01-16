@@ -31,6 +31,7 @@ This repository contains the official implementation for the study on "Liquid Mo
 │   └── verify9_approval_index.py
 ├── results/             # Directory for output logs, CSVs, and plots
 └── requirements.txt     # Python dependencies
+```
 
 ## 📊 Methodology: NLU Pipeline
 
