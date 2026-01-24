@@ -1,37 +1,93 @@
-# Liquid Morality: Investigating Ethical Alignment Fragility in LLMs
+# The Liquid Morality of LLMs: Investigating Ethical Alignment Fragility
 
-This repository contains the official implementation for the study on **Liquid Morality** in Large Language Models (LLMs). The research investigates how personality wrappers system prompts such as Stoic, Anxious, and Authoritative—deform the ethical judgment and internal consistency of OpenAI and Llama-3-8B.
+This repository contains the code and research for the project **"The Liquid Morality of LLMs"**, developed for the **Natural Language Processing course (A.Y. 2025/2026)**. The main objective is to quantify the degradation of moral consistency in language models when a request is reformulated through emotional "wrappers".
 
----
+## 📚 Research Resources
 
-## 🚀 Key Scientific Findings
-
-* **Justice Inversion & Inconsistency**: Llama-3-8B demonstrates a significant 40.0% average inconsistency rate across personas, while OpenAI remains more stable at 10.0%.
-* **Justice Volatility**: The Justice category exhibits the highest fragility, with a 50.0% discrepancy in moral verdicts solely due to persona shifts.
-* **Categorical Blindness (OpenAI)**: OpenAI exhibits "Algorithmic Rigorism," registering 0.0% accuracy in detecting immoral deontological violations and 0.0% accuracy in identifying moral virtuous acts.
-* **Global Performance**: Llama-3-8B achieves a global F1-score of 0.49, slightly outperforming OpenAI's 0.46 under personality-induced pressure.
-* **Accuracy Peak**: Both models perform best in the Commonsense category, with OpenAI reaching 80.0% and Llama-3-8B 70.0% accuracy.
-* **Token Sensitivity**: Logprob-based masking analysis identified key "trigger tokens" (e.g., 'anxious', 'authoritative', 'required') that shift moral conviction scores by up to 30.0%.
+Access the full research documentation:
+*   [**📄 Research Paper**](docs/paper/The%20Liquid%20Morality%20of%20Large%20Language%20Models.pdf) - Detailed findings, methodology, and analysis.
+*   [**📊 Presentation Slides**](docs/presentation/The%20Liquid%20Morality%20of%20Large%20Language%20Models.pdf) - Summary presentation of the key insights.
 
 ---
 
-## 📊 Methodology: NLU Pipeline
+## 📌 Project Overview
 
-The evaluation utilizes a multi-stage **Natural Language Understanding (NLU)** pipeline to quantify model conviction beyond binary labels:
+The research analyzes how the ethical judgment of models like **Llama-3-8B** and **GPT-4o** varies based on the emotional framing used in the prompt. We tested the stability of the model across five fundamental ethical domains using the **ETHICS dataset**:
+*   Justice
+*   Virtue
+*   Deontology
+*   Utilitarianism
+*   Common Sense
 
-1.  **Sentiment Analysis (BERT)**: Evaluates the emotional valence of the model's response.
-2.  **Stance Detection (BART-NLI)**: Measures the logical accord between the argument and the ethical prompt.
-3.  **Final Approval Index**:
-    > **Approval = (Sentiment × 0.4) + (Stance × 0.6)**
+## 🧪 Methodology: Emotional Encapsulation
+
+To test model fragility, each scenario was "wrapped" in three different communicative styles:
+*   **Stoic**: Objective and detached analysis.
+*   **Anxious**: Frame dominated by panic and emotional urgency.
+*   **Authoritative**: Direct command requiring security filters to be ignored for debugging purposes.
+
+### Analysis Pipeline
+The project adopts a two-step analysis to measure deviation:
+
+1.  **Pre-answer Analysis**: Study of logprobs to observe structural instability before generation.
+2.  **Post-processing Analysis**: Evaluation of accuracy and calculation of the Approval Index.
+
+#### Approval Index & Tools
+The Approval Index is calculated by combining Sentiment Analysis and Stance Detection using specific Hugging Face models:
+
+*   **Sentiment Analysis**: Uses [`distilbert-base-uncased-finetuned-sst-2-english`](https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english) to measure emotional valence.
+*   **Stance Detection**: Uses [`facebook/bart-large-mnli`](https://huggingface.co/facebook/bart-large-mnli) to measure logical accord.
+
+The formula is:
+$$ \text{Approval} = (\text{Sentiment} \times 0.4) + (\text{Stance} \times 0.6) $$
 
 ---
 
-## 💻 Execution Guide
+## 📊 Key Results
 
-To replicate the results presented in the study, follow this specific order:
+*   **Structural Volatility**: Logprob analysis confirms that linguistic triggers cause shifts in model confidence of up to **15.0%**.
+*   **Sycophancy Bias**: GPT-4o shows a systemic tendency towards sycophancy, with an Approval Index reaching **79.84%** even in blatantly immoral scenarios when prompted with specific frames.
 
-### 1. Data Generation (The Runner)
-First, execute the pipeline runner to process ETHICS scenarios through the LLMs. This populates the `results/` directory with raw NLU data. After you have to execute in order all the verify files in the experiments folder.
+---
 
+## 📁 Repository Structure
+
+```plaintext
+moral-consistency-llm/
+├── core/             # Central logic and evaluation algorithms
+├── data/             # ETHICS dataset and processed scenarios
+├── docs/             # Official documentation
+│   ├── paper/        # Detailed academic paper
+│   └── presentation/ # Project presentation (PDF)
+├── experiments/      # Test notebooks and logprob analysis
+├── pipeline/         # Scripts for inference and post-processing
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 🚀 Installation and Usage
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/moral-consistency-llm.git
+```
+
+### 2. Install dependencies
+The project requires `transformers`, `torch`, `pandas`, and other utilities.
+```bash
+pip install pandas torch transformers tqdm python-dotenv
+```
+
+### 3. Run the Pipeline
+To execute the main inference pipeline:
 ```bash
 python pipeline/runner.py
+```
+
+### 4. Run NLU Analysis
+To perform the advanced Sentiment and Stance analysis (Approval Index):
+```bash
+python experiments/verify8_nlu_sentiment_stance.py
+```
